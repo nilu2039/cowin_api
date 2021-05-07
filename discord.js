@@ -7,10 +7,7 @@ client.on("ready", () => {
 
 client.on("message", async (message) => {
   if (message.content === "-delete") {
-    let fetched;
-    fetched = await message.channel.messages.fetch({ limit: 100 });
-    message.channel.bulkDelete(fetched, true);
-    console.log(fetched);
+    message.reply("working");
   }
 });
 client.login(process.env.BOT_TOKEN);

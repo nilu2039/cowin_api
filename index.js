@@ -1,13 +1,15 @@
-import axios from "axios";
+import fs from "fs";
 import { format } from "date-fns";
 import Discord from "discord.js";
+import https from "https";
 const client = new Discord.Client();
 import "dotenv/config";
 var day = new Date().getDate();
 var month = new Date().getMonth() + 1;
 var year = new Date().getFullYear();
 var date = format(new Date(`${day},${month},${year}`), "MM-dd-yyyy");
-const url = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=731204&date=${date}`;
+console.log(date);
+const url = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=791110&date=${date}`;
 
 const hook = new Discord.WebhookClient(
   "840176397515358248",
@@ -21,27 +23,46 @@ const fetch = async () => {
       message.reply("outer");
     }
   });
-  while (true) {
-    const { data } = await axios.get(url, {
-      "access-control-allow-credentials": true,
-    });
-    client.on("message", async (message) => {
-      if (message.content === "-inner") {
-        message.reply("inner");
-      }
-    });
-    data.centers.forEach((center) => {
-      center.sessions.forEach((session) => {
-        if (session.available_capacity != 0) {
-          client.on("ready", () => {
-            console.log(`Logged in as ${client.user.tag}!`);
+
+  try {
+    https.get(url, (res) => {
+      res.setEncoding("utf8");
+      let rawData = "";
+      res.on("data", (chunk) => {
+        rawData += chunk;
+      });
+      res.on("end", () => {
+        try {
+          const data = JSON.parse(rawData);
+          fs.writeFile("output.txt", JSON.stringify(data), (e) =>
+            console.log(e)
+          );
+          data.centers.forEach((center) => {
+            center.sessions.forEach((session) => {
+              if (session.available_capacity != 0) {
+                client.on("ready", () => {
+                  console.log(`Logged in as ${client.user.tag}!`);
+                });
+                hook.send(center.name);
+              }
+            });
           });
-          hook.send(center.name);
+        } catch (e) {
+          console.error(e.message);
         }
       });
     });
-    await sleep(10800000);
+  } catch (error) {
+    console.log(error);
   }
+
+  client.on("message", async (message) => {
+    if (message.content === "-inner") {
+      message.reply("inner");
+    }
+  });
+
+  await sleep(10800000);
 };
 
 fetch();

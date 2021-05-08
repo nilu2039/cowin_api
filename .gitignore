@@ -1,2 +1,7 @@
 .env
 /node_modules
+discord.js
+output.txt
+output1.txt
+.gitignore
+server.js

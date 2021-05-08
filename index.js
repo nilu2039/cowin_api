@@ -9,7 +9,7 @@ var month = new Date().getMonth() + 1;
 var year = new Date().getFullYear();
 var date = format(new Date(`${day},${month},${year}`), "MM-dd-yyyy");
 console.log(date);
-const url = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=791110&date=${date}`;
+const url = `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=731204&date=${date}`;
 
 const hook = new Discord.WebhookClient(
   "840176397515358248",
@@ -62,7 +62,7 @@ const fetch = async () => {
     }
   });
 
-  await sleep(10800000);
+  await sleep(3600000);
 };
 
 fetch();
